@@ -490,57 +490,78 @@ function showOrderReady(order) {
 document.getElementById("pixPaidButton")?.addEventListener("click", () => sendWhatsAppMessage());
 document.getElementById("sendOrderButton")?.addEventListener("click", () => sendWhatsAppMessage());
 
+
 // ======================================
-// MENSAGEM DO WHATSAPP (TEMA PIRATA COM CARACTERÍSTICAS)
+// MENSAGEM DO WHATSAPP - DESU BURGUER
 // ======================================
 function sendWhatsAppMessage() {
   if (!currentOrder) return;
+
   const lines = [];
-  
-  lines.push("🏴‍☠️ *NOVO PEDIDO - DESU BURGUER* 🍔");
-  lines.push("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-  
+
+  lines.push("🏴‍☠️ *NOVO PEDIDO | DESU BURGUER* 🍔");
+  lines.push("");
+  lines.push("🛒 *ITENS DO PEDIDO*");
+  lines.push("");
+
   currentOrder.items.forEach(i => {
     const product = products.find(p => p.id === i.id);
-    lines.push(`🍖 *${i.quantity}x* ${product.name} — ${money(i.price)} un (Total: ${money(i.total)})`);
-    lines.push(`   _Detalhes: ${product.desc}_`);
+
+    lines.push(`*${i.quantity}x ${product.name}*`);
+    lines.push(`Valor unitário: ${money(i.price)}`);
+    lines.push(`Subtotal: ${money(i.total)}`);
+    lines.push(`_${product.desc}_`);
+    lines.push("");
   });
-  
-  lines.push("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-  lines.push(`💰 *TESOURO TOTAL (PRODUTOS):* ${money(currentOrder.total)}`);
-  lines.push(`🛵 *Taxa de entrega:* A confirmar pela loja`);
-  lines.push("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-  lines.push(`👤 *Tripulante (Cliente):* ${currentOrder.name}`);
-  lines.push(`📞 *Den Den Mushi (Telefone):* ${currentOrder.phone}`);
-  
-  if (currentOrder.fulfillment === 'delivery') {
-    lines.push(`📍 *Destino:* Entrega`);
-    lines.push(`🏠 *Ilha/Endereço:* ${currentOrder.address}`);
+
+  lines.push("💰 *RESUMO DO PEDIDO*");
+  lines.push(`*Total dos produtos: ${money(currentOrder.total)}*`);
+  lines.push("🛵 Taxa de entrega: A confirmar pela loja");
+  lines.push("");
+
+  lines.push("👤 *DADOS DO CLIENTE*");
+  lines.push(`*Nome:* ${currentOrder.name}`);
+  lines.push(`*Telefone:* ${currentOrder.phone}`);
+  lines.push("");
+
+  if (currentOrder.fulfillment === "delivery") {
+    lines.push("📍 *DADOS DA ENTREGA*");
+    lines.push(`*Endereço:* ${currentOrder.address}`);
+
     if (currentOrder.reference) {
-      lines.push(`📌 *Ponto de Referência:* ${currentOrder.reference}`);
+      lines.push(`*Referência:* ${currentOrder.reference}`);
     }
+
     if (currentOrder.location) {
-      lines.push(`🗺️ *Coordenadas do Tesouro:* https://www.google.com/maps?q=${currentOrder.location.latitude},${currentOrder.location.longitude}`);
+      lines.push(
+        `*Localização:* https://www.google.com/maps?q=${currentOrder.location.latitude},${currentOrder.location.longitude}`
+      );
     }
   } else {
-    lines.push(`🏪 *Destino:* Retirada no QG (Loja)`);
+    lines.push("🏪 *RETIRADA NA LOJA*");
   }
+
+  lines.push("");
+  lines.push("💳 *FORMA DE PAGAMENTO*");
 
   let formaPagamento = currentOrder.payment.toUpperCase();
-  if (currentOrder.payment === 'cash') formaPagamento = 'DINHEIRO';
-  if (currentOrder.payment === 'pix') formaPagamento = 'PIX';
-  if (currentOrder.payment === 'card') formaPagamento = 'CARTÃO';
 
-  lines.push(`💳 *Moeda de Troca (Pagamento):* ${formaPagamento}`);
+  if (currentOrder.payment === "cash") formaPagamento = "DINHEIRO";
+  if (currentOrder.payment === "pix") formaPagamento = "PIX";
+  if (currentOrder.payment === "card") formaPagamento = "CARTÃO";
 
-  if (currentOrder.payment === 'cash' && currentOrder.needsChange) {
-    lines.push(`💵 *Troco necessário para:* ${money(Number(currentOrder.changeAmount))}`);
+  lines.push(formaPagamento);
+
+  if (currentOrder.payment === "cash" && currentOrder.needsChange) {
+    lines.push(`💵 *Troco para:* ${money(Number(currentOrder.changeAmount))}`);
   }
 
-  lines.push("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-  lines.push("✨ *Recompensa solicitada pelo cardápio online do Rei dos Piratas!* 🌊");
-  
+  lines.push("");
+  lines.push("🏴‍☠️ *Obrigado por escolher a DESU BURGUER!* 🍔");
+  lines.push("🌊 Seu pedido está navegando até nossa cozinha!");
+
   const text = encodeURIComponent(lines.join("\n"));
+
   window.open(`https://wa.me/${CONFIG.whatsapp}?text=${text}`, "_blank");
 }
 
