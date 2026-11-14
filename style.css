@@ -32,7 +32,7 @@ body {
       rgba(12, 12, 16, 0.85),
       rgba(12, 12, 16, 0.92)
     ),
-    url("fundo.jpg") center center / 500px auto repeat; /* Ajustado para repetir em tamanho menor (afastado) */
+    url("fundo.jpg") center center / 800px auto repeat;
   background-color: var(--background);
   color: var(--text);
   font-family: 'Montserrat', sans-serif;
@@ -77,7 +77,7 @@ a {
 .brand-text h1 {
   font-family: 'Permanent Marker', cursive;
   color: var(--yellow);
-  font-size: clamp(32px, 7.5vw, 48px);
+  font-size: 38px; /* Travado em pixels fixos para não inflar no GitHub */
   line-height: 1.05;
   text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
   letter-spacing: 0.5px;
@@ -91,7 +91,7 @@ a {
   margin-top: 6px;
   color: var(--yellow);
   font-family: 'Permanent Marker', cursive;
-  font-size: 14px;
+  font-size: 13px; /* Travado em pixels fixos */
   letter-spacing: 1px;
   text-shadow: 1px 1px 0px rgba(0,0,0,0.8);
 }
@@ -128,7 +128,7 @@ a {
 .combos-link {
   color: var(--yellow);
   font-family: 'Permanent Marker', cursive;
-  font-size: 14px;
+  font-size: 14px; /* Travado em pixels fixos */
   text-decoration: none;
   text-shadow: 1px 1px 0px rgba(0,0,0,0.8);
 }
@@ -158,14 +158,14 @@ a {
   margin: 15px 0 8px;
   color: var(--yellow);
   font-family: 'Permanent Marker', cursive;
-  font-size: 14px;
+  font-size: 13px; /* Travado em pixels fixos */
   letter-spacing: 0.5px;
 }
 
 .featured-content h2 {
   margin: 0 0 8px;
   color: white;
-  font-size: clamp(22px, 4.5vw, 28px);
+  font-size: 24px;
   font-weight: 900;
 }
 
@@ -220,7 +220,7 @@ a {
   font-family: 'Permanent Marker', cursive;
   margin-bottom: 20px;
   color: var(--yellow);
-  font-size: clamp(24px, 5vw, 32px);
+  font-size: 26px; /* Travado em pixels fixos */
   letter-spacing: 0.5px;
   text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
 }
@@ -363,7 +363,7 @@ a {
 }
 
 /* =====================================
-   BARRA FIXA DO CARRINHO
+   BARRA FIXA DO CARRINHO (TAMANHO CONTROLADO)
 ===================================== */
 
 .cart-bar {
@@ -385,7 +385,7 @@ a {
   gap: 8px;
   max-width: 600px;
   margin: 0 auto;
-  padding: 12px 16px;
+  padding: 10px 16px;
   background: linear-gradient(135deg, #e62e2e, #b81d1d);
   border: 2px solid rgba(255,255,255,0.2);
   border-radius: 16px;
@@ -408,16 +408,16 @@ a {
 
 .cart-icon-badge {
   background: rgba(0,0,0,0.2);
-  padding: 5px 8px;
-  border-radius: 10px;
-  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
   flex-shrink: 0;
 }
 
 .ver-pedido-label {
   font-family: 'Permanent Marker', cursive;
   color: white;
-  font-size: clamp(14px, 3.8vw, 20px);
+  font-size: 16px; /* Travado em pixels fixos para não estourar no GitHub */
   letter-spacing: 0.5px;
   text-shadow: 1px 1px 0px rgba(0,0,0,0.6);
   white-space: nowrap;
@@ -426,7 +426,7 @@ a {
 .cart-right strong {
   font-family: 'Permanent Marker', cursive;
   color: var(--yellow);
-  font-size: clamp(14px, 3.8vw, 20px);
+  font-size: 16px; /* Travado em pixels fixos para harmonizar */
   text-shadow: 1px 1px 0px rgba(0,0,0,0.6);
   white-space: nowrap;
 }
