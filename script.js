@@ -150,6 +150,7 @@ function renderProducts(category = activeCategory) {
         src="${product.image}"
         alt="${product.name}"
         loading="lazy"
+        decoding="async"
         onerror="this.onerror=null;this.src='piscininha-desu.jpg'"
       >
 
