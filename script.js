@@ -8,7 +8,7 @@ const photos = {
   piscininha: "piscininha-desu.jpg",
   "combo-simples": "combo-simples.jpg",
   "combo-duplo": "combo-duplo.jpg",
-  "combo-desu": "combo-desu.jpg",
+  "combo-desu": "combo-desu-1.jpg",
   "burguer-kids": "burguer-kids.jpg",
   "file-frango": "file-frango.jpg",
   "frango-duplo": "frango-duplo.jpg",
