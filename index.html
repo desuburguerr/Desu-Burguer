@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101013">
+  <title>Desu Burguer — Sabor de Verdade!</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <header class="header">
+    <div class="brand">
+      <div class="brand-text">
+        <div class="crown-icon">👑</div>
+        <h1><span>Desu</span><br><span>Burguer</span></h1>
+        <p class="slogan">SABOR DE VERDADE!</p>
+      </div>
+    </div>
+
+    <div class="status-row">
+      <div class="status" id="storeStatus" aria-live="polite">
+        <span class="live-dot" id="statusDot"></span>
+        <span id="statusText">Verificando horário...</span>
+      </div>
+
+      <div class="status-actions">
+        <a class="combos-link" href="#cardapio">Ver combos ↗</a>
+        <a class="instagram-link" href="https://www.instagram.com/desu_burguer?utm_source=qr&vrfl=c213ejdxOTl2a3Fy" target="_blank" rel="noopener noreferrer">
+          <svg class="instagram-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+          Instagram
+        </a>
+      </div>
+    </div>
+
+    <section class="featured">
+      <img src="combo-desu.jpg" alt="Combo Desu número 4" onerror="this.onerror=null;this.src='piscininha-desu.jpg'">
+
+      <div class="featured-content">
+        <span class="eyebrow">DESTAQUE DA CASA</span>
+        <h2>Combo Desu Nº 4</h2>
+        <p>3 X Desu, 3 batatas de 200g e refrigerante de 1 litro.</p>
+
+        <div class="featured-bottom">
+          <strong>R$ 100,00</strong>
+          <button class="add-featured" id="featuredAdd" onclick="addToCart('combo-desu')">＋ Pedir</button>
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <main id="cardapio" class="menu">
+    <h2 class="section-title">NOSSO CARDÁPIO</h2>
+
+    <nav class="categories" aria-label="Categorias do cardápio">
+      <button class="category active" data-cat="todos">Todos</button>
+      <button class="category" data-cat="combos">Combos</button>
+      <button class="category" data-cat="hamburgueres">Hambúrgueres</button>
+      <button class="category" data-cat="porcoes">Porções</button>
+      <button class="category" data-cat="bebidas">Bebidas & Sucos</button>
+    </nav>
+
+    <div id="products" class="products"></div>
+  </main>
+
+  <div class="cart-bar">
+    <div class="cart-summary-content" onclick="openCheckout()">
+      <div class="cart-left">
+        <div class="cart-icon-badge">🛒 <span id="count">0</span></div>
+        <span class="ver-pedido-label">Ver Pedido</span>
+      </div>
+
+      <div class="cart-right">
+        <strong id="total">R$ 0,00</strong>
+      </div>
+    </div>
+  </div>
+
+  <div id="checkout" class="modal hidden">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2 id="modalTitle">1. Seu Carrinho</h2>
+        <button class="close-modal" onclick="closeCheckout()">✕</button>
+      </div>
+
+      <div id="stepCart" class="checkout-step">
+        <div class="modal-section-box">
+          <div id="cartItems" class="cart-items"></div>
+          <p id="empty" class="empty-message">Seu carrinho está vazio.</p>
+
+          <div class="checkout-total">
+            <span>Subtotal</span>
+            <strong id="checkoutTotal">R$ 0,00</strong>
+          </div>
+        </div>
+
+        <button class="step-btn" onclick="goToStep(2)">CONTINUAR PARA DADOS ➔</button>
+      </div>
+
+      <div id="stepData" class="checkout-step hidden">
+        <div class="modal-section-box">
+          <h3>DADOS DE CONTATO E ENTREGA</h3>
+
+          <label>Seu nome *
+            <input id="name" type="text" placeholder="Digite seu nome completo">
+          </label>
+
+          <label>WhatsApp / Telefone *
+            <input id="phone" type="tel" placeholder="(89) 99999-9999">
+          </label>
+
+          <div class="field-label">Tipo de pedido</div>
+
+          <div class="two-buttons">
+            <button id="delivery" class="choice selected" onclick="setType('entrega')">🛵 Entrega</button>
+            <button id="pickup" class="choice" onclick="setType('retirada')">🏪 Retirar no local</button>
+          </div>
+
+          <div id="addressWrap">
+            <div class="address-header-row">
+              <label style="margin:0;">Endereço de entrega *</label>
+              <button type="button" class="gps-btn" onclick="getLocation()">📍 Usar minha localização</button>
+            </div>
+
+            <textarea id="address" rows="2" placeholder="Rua, número, bairro ou clique em usar localização"></textarea>
+          </div>
+        </div>
+
+        <div class="step-buttons-row">
+          <button class="step-btn-back" onclick="goToStep(1)">← Voltar</button>
+          <button class="step-btn" onclick="goToStep(3)">IR PARA PAGAMENTO ➔</button>
+        </div>
+      </div>
+
+      <div id="stepPay" class="checkout-step hidden">
+        <div class="modal-section-box">
+          <h3>FORMA DE PAGAMENTO</h3>
+
+          <div class="three-buttons">
+            <button class="pay choice selected" onclick="setPay('Pix', this)">Pix</button>
+            <button class="pay choice" onclick="setPay('Cartão', this)">Cartão</button>
+            <button class="pay choice" onclick="setPay('Dinheiro', this)">Dinheiro</button>
+          </div>
+
+          <p id="payInfo" class="pay-info">Os dados do Pix serão enviados pela loja no WhatsApp.</p>
+
+          <label id="changeWrap" class="hidden">Troco para quanto?
+            <input id="change" type="text" placeholder="Ex.: R$ 50,00">
+          </label>
+        </div>
+
+        <div class="step-buttons-row">
+          <button class="step-btn-back" onclick="goToStep(2)">← Voltar</button>
+          <button class="finish-order" onclick="finishOrder()">FINALIZAR NO WHATSAPP ➔</button>
+        </div>
+      </div>
+
+      <p class="fine-print">Desu Burguer — Sabor de Verdade!</p>
+    </div>
+  </div>
+</body>
+</html>

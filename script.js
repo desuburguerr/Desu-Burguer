@@ -1,573 +1,408 @@
-// ======================================
-// CONFIGURAÇÕES DA DESU BURGUER
-// ======================================
+// ==========================================
+// DESU BURGUER — SCRIPT OTIMIZADO
+// ==========================================
 
-const CONFIG = {
-  whatsapp: "5589981501360",
-  pixKey: "+5589981501360",
-  pixName: "ANDERSON HENRIQUE BATISTA",
-  pixCity: "CRISTINO CASTRO",
-  mapLink: "https://maps.app.goo.gl/nPViaJ3Nayq3momMA?g_st=ac"
+const WHATSAPP_NUMBER = "5589981501360";
+
+const photos = {
+  piscininha: "piscininha-desu.jpg",
+  "combo-simples": "combo-simples.jpg",
+  "combo-duplo": "combo-duplo.jpg",
+  "combo-desu": "combo-desu.jpg",
+  "burguer-kids": "burguer-kids.jpg",
+  "file-frango": "file-frango.jpg",
+  "frango-duplo": "frango-duplo.jpg",
+  simples: "simples.jpg",
+  duplo: "duplo.jpg",
+  giga: "giga.jpg",
+  "x-desu": "x-desu.jpg",
+  "x-desu-duplo": "x-desu-duplo.jpg",
+  tropical: "tropical.jpg",
+  "tropical-duplo": "tropical-duplo.jpg",
+  "tropical-picante": "tropical-picante.jpg",
+  coxinha: "coxinha.jpg",
+  "batata-simples": "batata-simples.jpg",
+  "batata-completa-300": "batata-completa-300.jpg",
+  "batata-completa-400": "batata-completa-400.jpg",
+  agua: "agua.jpg",
+  "agua-gas": "agua-gas.jpg",
+  ks: "ks.jpg",
+  "skol-lata": "skol-lata.jpg",
+  "skol-600": "skol-600.jpg",
+  "brahma-600": "brahma-600.jpg",
+  original: "original.jpg",
+  heineken: "heineken.jpg",
+  "suco-simples": "suco-simples.jpg",
+  "suco-cremoso": "suco-cremoso.jpg"
 };
 
-// ======================================
-// CONTROLE DE HORÁRIO COMPLETO
-// ======================================
-function obterStatusLoja() {
-  const agora = new Date();
-  const diaSemana = agora.getDay(); // 0 = Dom, 1 = Seg, 2 = Ter, 3 = Qua, 4 = Qui, 5 = Sex, 6 = Sáb
-  const horaAtual = agora.getHours() + agora.getMinutes() / 60;
-
-  const nomesDias = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
-
-  // Quarta-feira (dia 3): Fechado o dia todo -> Abre na Quinta-feira
-  if (diaSemana === 3) {
-    return { aberta: false, mensagem: "A Desu Burguer está fechada hoje (Quarta-feira). Abrimos amanhã (Quinta-feira) às 18:30! 🏴‍☠️" };
-  }
-
-  // Terça-feira (dia 2): Abre às 18:00 e fecha às 23:30
-  if (diaSemana === 2) {
-    if (horaAtual < 18.0) {
-      return { aberta: false, mensagem: "A Desu Burguer abre hoje (Terça-feira) às 18:00! 🏴‍☠️" };
-    }
-    if (horaAtual >= 23.5) {
-      return { aberta: false, mensagem: "A Desu Burguer fechou por hoje. Abrimos amanhã às 18:30! 🏴‍☠️" };
-    }
-    return { aberta: true };
-  }
-
-  // Demais dias (Dom, Seg, Qui, Sex, Sáb): Abre às 18:30 e fecha às 23:30
-  if (horaAtual < 18.5) {
-    return { aberta: false, mensagem: `A Desu Burguer abre hoje (${nomesDias[diaSemana]}) às 18:30! 🏴‍☠️` };
-  }
-  if (horaAtual >= 23.5) {
-    let proximoDia = (diaSemana + 1) % 7;
-    if (proximoDia === 3) proximoDia = 4; // Se amanhã for quarta, pula para quinta
-    return { aberta: false, mensagem: `A Desu Burguer fechou por hoje. Abrimos novamente ${proximoDia === 4 ? "na" : "no"} ${nomesDias[proximoDia]} às 18:30! 🏴‍☠️` };
-  }
-
-  return { aberta: true };
-}
-
-function verificarLojaAberta() {
-  return obterStatusLoja().aberta;
-}
-
-// ======================================
-// CARDÁPIO COMPLETO COM IMAGENS (.jpg)
-// ======================================
-
 const products = [
-  // COMBOS
-  { id: 1, name: "Piscininha Desu", category: "Combos", price: 32, desc: "Piscina de cheddar com bacon e simples.", image: "piscininha-desu.jpg" },
-  { id: 2, name: "Combo Simples", category: "Combos", price: 34, desc: "1 Simples, 1 batata 200g, refri lata.", image: "combo-simples.jpg" },
-  { id: 3, name: "Combo Duplo", category: "Combos", price: 80, desc: "2 Duplo, 2 porção batatas, refri 1 litro.", image: "combo-duplo.jpg" },
-  { id: 4, name: "Combo Desu", category: "Combos", price: 100, desc: "3 X Desu, 3 batatas 200g, refri 1 litro.", image: "combo-desu.jpg" },
-
-  // HAMBÚRGUERES
-  { id: 5, name: "Burguer Kids", category: "Hambúrgueres", price: 18, desc: "Pão brioche, carne 140g, mussarela e molho da casa.", image: "burguer-kids.jpg" },
-  { id: 6, name: "Filé de Frango", category: "Hambúrgueres", price: 21, desc: "Pão brioche, filé de frango 120g, mussarela, bacon, cebola e molho da casa.", image: "file-frango.jpg" },
-  { id: 7, name: "Frango Duplo", category: "Hambúrgueres", price: 28, desc: "Pão brioche, 2 filés de frango 120g, mussarela, 2 bacon, cebola e molho da casa.", image: "frango-duplo.jpg" },
-  { id: 8, name: "Simples", category: "Hambúrgueres", price: 23, desc: "Pão brioche, carne 140g, cheddar, bacon, cebola caramelizada e molho da casa.", image: "simples.jpg" },
-  { id: 9, name: "Duplo", category: "Hambúrgueres", price: 34, desc: "Pão brioche, 2 carnes de 140g, cheddar, 2 bacon, cebola caramelizada e molho da casa.", image: "duplo.jpg" },
-  { id: 10, name: "Giga", category: "Hambúrgueres", price: 46, desc: "Pão brioche, 3 carnes de 140g, 3 cheddar, 3 bacon, cebola caramelizada, picles e molho da casa.", image: "giga.jpg" },
-  { id: 11, name: "X Desu", category: "Hambúrgueres", price: 26, desc: "Pão brioche, carne 140g, mussarela, bacon, alface e tomate e molho da casa.", image: "x-desu.jpg" },
-  { id: 12, name: "X Desu Duplo", category: "Hambúrgueres", price: 36, desc: "Pão brioche, 2 carnes 140g, mussarela, 2 bacon, alface, tomate, cebola e molho da casa.", image: "x-desu-duplo.jpg" },
-  { id: 13, name: "Tropical", category: "Hambúrgueres", price: 25, desc: "Pão brioche, blend 140g, cheddar, 1 bacon, abacaxi caramelizado molho da casa.", image: "tropical.jpg" },
-  { id: 14, name: "Tropical Duplo", category: "Hambúrgueres", price: 35, desc: "Pão brioche, 2 carne 140g, cheddar, bacon, abacaxi caramelizado e molho da casa.", image: "tropical-duplo.jpg" },
-  { id: 15, name: "Tropical Picante", category: "Hambúrgueres", price: 26, desc: "Pão brioche, 1 carne de 140g, cheddar, 2 bacon, geleia abacaxi picante molho da casa.", image: "tropical-picante.jpg" },
-
-  // PORÇÕES
-  { id: 16, name: "Coxinha 150g", category: "Porções", price: 10, desc: "Coxinha com queijo Catupiry.", image: "coxinha.jpg" },
-  { id: 17, name: "Batata Simples 300g", category: "Porções", price: 18, desc: "Porção tradicional crocante.", image: "batata-simples.jpg" },
-  { id: 18, name: "Batata Completa 300g", category: "Porções", price: 22, desc: "Acompanha cheddar e bacon especial.", image: "batata-completa-300.jpg" },
-  { id: 19, name: "Batata Completa 400g", category: "Porções", price: 25, desc: "Porção família com cheddar e bacon.", image: "batata-completa-400.jpg" },
-
-  // BEBIDAS
-  { id: 20, name: "Água", category: "Bebidas", price: 5, desc: "Água mineral 500ml.", image: "agua.jpg" },
-  { id: 21, name: "Água com gás", category: "Bebidas", price: 5, desc: "Água com gás 500ml.", image: "agua-gas.jpg" },
-  { id: 22, name: "KS", category: "Bebidas", price: 4, desc: "Refrigerante garrafinha KS.", image: "ks.jpg" },
-  { id: 23, name: "Skol Lata", category: "Bebidas", price: 4, desc: "Cerveja lata.", image: "skol-lata.jpg" },
-  { id: 24, name: "Skol 600", category: "Bebidas", price: 10, desc: "Cerveja garrafa 600ml.", image: "skol-600.jpg" },
-  { id: 25, name: "Brahma 600", category: "Bebidas", price: 10, desc: "Cerveja garrafa 600ml.", image: "brahma-600.jpg" },
-  { id: 26, name: "Original", category: "Bebidas", price: 12, desc: "Cerveja Original 600ml.", image: "original.jpg" },
-  { id: 27, name: "Heineken", category: "Bebidas", price: 15, desc: "Cerveja Heineken Long Neck.", image: "heineken.jpg" },
-
-  // SUCOS
-  { id: 28, name: "Suco Simples", category: "Sucos", price: 8, desc: "Sabor da fruta refrescante.", image: "suco-simples.jpg" },
-  { id: 29, name: "Suco Cremoso", category: "Sucos", price: 10, desc: "Suco cremoso especial da casa.", image: "suco-cremoso.jpg" }
+  { id: "piscininha", name: "Piscininha Desu", cat: "combos", price: 32, desc: "Piscina de cheddar com bacon e simples.", image: photos["piscininha"] },
+  { id: "combo-simples", name: "Combo Simples", cat: "combos", price: 34, desc: "1 Simples, 1 batata 200g e refrigerante lata.", image: photos["combo-simples"] },
+  { id: "combo-duplo", name: "Combo Duplo", cat: "combos", price: 80, desc: "2 Duplo, 2 porções de batatas e refrigerante 1 litro.", image: photos["combo-duplo"] },
+  { id: "combo-desu", name: "Combo Desu", cat: "combos", price: 100, desc: "3 X Desu, 3 batatas 200g e refrigerante 1 litro.", image: photos["combo-desu"] },
+  { id: "burguer-kids", name: "Burguer Kids", cat: "hamburgueres", price: 18, desc: "Pão brioche, carne 140g, mussarela e molho da casa.", image: photos["burguer-kids"] },
+  { id: "file-frango", name: "Filé de Frango", cat: "hamburgueres", price: 21, desc: "Pão brioche, filé de frango 120g, mussarela, bacon, cebola e molho da casa.", image: photos["file-frango"] },
+  { id: "frango-duplo", name: "Frango Duplo", cat: "hamburgueres", price: 28, desc: "2 filés de frango 120g, mussarela, 2 bacon, cebola e molho da casa.", image: photos["frango-duplo"] },
+  { id: "simples", name: "Simples", cat: "hamburgueres", price: 23, desc: "Pão brioche, carne 140g, cheddar, bacon, cebola caramelizada e molho da casa.", image: photos["simples"] },
+  { id: "duplo", name: "Duplo", cat: "hamburgueres", price: 34, desc: "Pão brioche, 2 carnes 140g, cheddar, 2 bacon, cebola caramelizada e molho da casa.", image: photos["duplo"] },
+  { id: "giga", name: "Giga", cat: "hamburgueres", price: 46, desc: "Pão brioche, 3 carnes 140g, 3 cheddar, 3 bacon, cebola caramelizada, picles e molho da casa.", image: photos["giga"] },
+  { id: "x-desu", name: "X Desu", cat: "hamburgueres", price: 26, desc: "Pão brioche, carne 140g, mussarela, bacon, alface, tomate e molho da casa.", image: photos["x-desu"] },
+  { id: "x-desu-duplo", name: "X Desu Duplo", cat: "hamburgueres", price: 36, desc: "Pão brioche, 2 carnes 140g, mussarela, 2 bacon, alface, tomate, cebola e molho da casa.", image: photos["x-desu-duplo"] },
+  { id: "tropical", name: "Tropical", cat: "hamburgueres", price: 25, desc: "Pão brioche, carne 140g, cheddar, bacon, abacaxi caramelizado e molho da casa.", image: photos["tropical"] },
+  { id: "tropical-duplo", name: "Tropical Duplo", cat: "hamburgueres", price: 35, desc: "Pão brioche, 2 carnes 140g, cheddar, bacon, abacaxi caramelizado e molho da casa.", image: photos["tropical-duplo"] },
+  { id: "tropical-picante", name: "Tropical Picante", cat: "hamburgueres", price: 26, desc: "Pão brioche, carne 140g, cheddar, 2 bacon, geleia de abacaxi picante e molho da casa.", image: photos["tropical-picante"] },
+  { id: "coxinha", name: "Coxinha 150g", cat: "porcoes", price: 10, desc: "Coxinha de frango com Catupiry.", image: photos["coxinha"] },
+  { id: "batata-simples", name: "Batata Simples 300g", cat: "porcoes", price: 18, desc: "Batata frita tradicional e crocante.", image: photos["batata-simples"] },
+  { id: "batata-completa-300", name: "Batata Completa 300g", cat: "porcoes", price: 22, desc: "Batata com cheddar e bacon especial.", image: photos["batata-completa-300"] },
+  { id: "batata-completa-400", name: "Batata Completa 400g", cat: "porcoes", price: 25, desc: "Porção maior com cheddar e bacon.", image: photos["batata-completa-400"] },
+  { id: "agua", name: "Água", cat: "bebidas", price: 5, desc: "Água mineral 500ml.", image: photos["agua"] },
+  { id: "agua-gas", name: "Água com gás", cat: "bebidas", price: 5, desc: "Água com gás 500ml.", image: photos["agua-gas"] },
+  { id: "ks", name: "KS", cat: "bebidas", price: 4, desc: "Refrigerante KS.", image: photos["ks"] },
+  { id: "skol-lata", name: "Skol Lata", cat: "bebidas", price: 4, desc: "Lata de cerveja.", image: photos["skol-lata"] },
+  { id: "skol-600", name: "Skol 600", cat: "bebidas", price: 10, desc: "Cerveja 600ml.", image: photos["skol-600"] },
+  { id: "brahma-600", name: "Brahma 600", cat: "bebidas", price: 10, desc: "Cerveja 600ml.", image: photos["brahma-600"] },
+  { id: "original", name: "Original", cat: "bebidas", price: 12, desc: "Cerveja 600ml.", image: photos["original"] },
+  { id: "heineken", name: "Heineken", cat: "bebidas", price: 15, desc: "Long neck.", image: photos["heineken"] },
+  { id: "suco-simples", name: "Suco Simples", cat: "bebidas", price: 8, desc: "Suco de fruta.", image: photos["suco-simples"] },
+  { id: "suco-cremoso", name: "Suco Cremoso", cat: "bebidas", price: 10, desc: "Suco cremoso da casa.", image: photos["suco-cremoso"] }
 ];
 
 let cart = [];
-let selectedCategory = "Todos";
-let currentOrder = null;
-let customerLocation = null;
+let orderType = "entrega";
+let paymentMethod = "Pix";
+let activeCategory = "todos";
+let currentStep = 1;
+let storeOpen = false;
 
-// ======================================
-// ELEMENTOS E INTERFACE
-// ======================================
+function getStoreSchedule(date = new Date()) {
+  const day = date.getDay();
+  if (day === 3) return null; // Quarta-feira: fechado
+  if (day === 2) return { open: 18 * 60, close: 23 * 60 + 30, text: "18:00" };
+  return { open: 18 * 60 + 30, close: 23 * 60 + 30, text: "18:30" };
+}
 
-const categoriesElement = document.getElementById("categories");
-const productsElement = document.getElementById("products");
+function isStoreOpen(date = new Date()) {
+  const schedule = getStoreSchedule(date);
+  if (!schedule) return false;
+  const minutes = date.getHours() * 60 + date.getMinutes();
+  return minutes >= schedule.open && minutes < schedule.close;
+}
 
-const cartOverlay = document.getElementById("cartOverlay");
-const checkoutOverlay = document.getElementById("checkoutOverlay");
-const pixOverlay = document.getElementById("pixOverlay");
-const orderOverlay = document.getElementById("orderOverlay");
+function updateStoreStatus() {
+  storeOpen = isStoreOpen();
+  const schedule = getStoreSchedule();
 
-const cartDrawer = document.getElementById("cartDrawer");
-const checkoutDrawer = document.getElementById("checkoutDrawer");
-const pixDrawer = document.getElementById("pixDrawer");
-const orderDrawer = document.getElementById("orderDrawer");
+  const status = document.getElementById("storeStatus");
+  const text = document.getElementById("statusText");
+  const dot = document.getElementById("statusDot");
 
-const cartItemsElement = document.getElementById("cartItems");
-const cartSubtotalElement = document.getElementById("cartSubtotal");
-const cartBarTotalElement = document.getElementById("cartBarTotal");
-const cartCountElement = document.getElementById("cartCount");
+  if (status) {
+    status.classList.toggle("closed", !storeOpen);
+    status.classList.toggle("open", storeOpen);
+  }
 
-const checkoutTotalElement = document.getElementById("checkoutTotal");
-const pixTotalElement = document.getElementById("pixTotal");
+  if (dot) {
+    dot.classList.toggle("closed-dot", !storeOpen);
+  }
 
-const deliveryFields = document.getElementById("deliveryFields");
-const pickupFields = document.getElementById("pickupFields");
-const changeFields = document.getElementById("changeFields");
-const changeAmountField = document.getElementById("changeAmountField");
+  if (text) {
+    if (storeOpen) {
+      text.textContent = "ABERTO AGORA";
+    } else {
+      const day = new Date().getDay();
+      if (day === 3) {
+        text.textContent = "FECHADO HOJE (Abre Qui 18:30)";
+      } else {
+        text.textContent = `FECHADO (Abre às ${schedule ? schedule.text : '18:30'})`;
+      }
+    }
+  }
+}
 
-const toastElement = document.getElementById("toast");
+function requireStoreOpen() {
+  updateStoreStatus();
+  if (storeOpen) return true;
+
+  const schedule = getStoreSchedule();
+  const day = new Date().getDay();
+  let abrirMsg = schedule ? `às ${schedule.text}` : "amanhã às 18:30";
+  if (day === 3) abrirMsg = "amanhã (Quinta) às 18:30";
+
+  alert(`A Desu Burguer está fechada no momento. Abriremos ${abrirMsg}!`);
+  return false;
+}
 
 function money(value) {
   return Number(value).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-function showToast(message) {
-  toastElement.textContent = message;
-  toastElement.classList.add("show");
-  setTimeout(() => { toastElement.classList.remove("show"); }, 2600);
-}
+function renderProducts(category = activeCategory) {
+  const container = document.getElementById("products");
+  if (!container) return;
 
-function openDrawer(name) {
-  closeAllDrawers();
-  const elements = {
-    cart: [cartDrawer, cartOverlay],
-    checkout: [checkoutDrawer, checkoutOverlay],
-    pix: [pixDrawer, pixOverlay],
-    order: [orderDrawer, orderOverlay]
-  };
-  const selected = elements[name];
-  if (selected) {
-    selected[0].classList.add("open");
-    selected[1].classList.add("open");
-    document.body.style.overflow = "hidden";
-  }
-}
+  const filtered = category === "todos" ? products : products.filter(p => p.cat === category);
+  const names = { combos: "COMBOS", hamburgueres: "HAMBÚRGUERES", porcoes: "PORÇÕES", bebidas: "BEBIDAS & SUCOS" };
 
-function closeAllDrawers() {
-  [cartDrawer, checkoutDrawer, pixDrawer, orderDrawer].forEach(el => el.classList.remove("open"));
-  [cartOverlay, checkoutOverlay, pixOverlay, orderOverlay].forEach(overlay => overlay.classList.remove("open"));
-  document.body.style.overflow = "";
-}
-
-document.querySelectorAll("[data-close]").forEach(button => {
-  button.addEventListener("click", closeAllDrawers);
-});
-
-[cartOverlay, checkoutOverlay, pixOverlay, orderOverlay].forEach(overlay => {
-  overlay.addEventListener("click", closeAllDrawers);
-});
-
-// ======================================
-// LOCAL STORAGE
-// ======================================
-function saveCart() {
-  localStorage.setItem("desuBurguerCart", JSON.stringify(cart));
-}
-
-function restoreCart() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("desuBurguerCart"));
-    if (Array.isArray(saved)) {
-      cart = saved.filter(item => products.some(p => p.id === item.id) && Number.isInteger(item.quantity) && item.quantity > 0);
-    }
-  } catch {
-    cart = [];
-  }
-}
-
-// ======================================
-// RENDERIZAÇÃO
-// ======================================
-function renderCategories() {
-  const categories = ["Todos", ...new Set(products.map(p => p.category))];
-  categoriesElement.innerHTML = categories.map(category => `
-    <button class="category-button ${selectedCategory === category ? "active" : ""}" data-category="${category}" type="button">
-      ${category}
-    </button>
-  `).join("");
-
-  categoriesElement.querySelectorAll("button").forEach(button => {
-    button.addEventListener("click", () => {
-      selectedCategory = button.dataset.category;
-      renderCategories();
-      renderProducts();
-    });
-  });
-}
-
-function renderProducts() {
-  const filtered = selectedCategory === "Todos" ? products : products.filter(p => p.category === selectedCategory);
-
-  productsElement.innerHTML = filtered.map(product => `
+  container.innerHTML = filtered.map(product => `
     <article class="product-card">
-      <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60'">
+      <img
+        src="${product.image}"
+        alt="${product.name}"
+        loading="lazy"
+        onerror="this.onerror=null;this.src='piscininha-desu.jpg'"
+      >
+
       <div class="product-info">
-        <span class="product-category">${product.category}</span>
-        <h3>${product.name}</h3>
-        <p>${product.desc}</p>
+        <div>
+          <span class="product-category">${names[product.cat]}</span>
+          <h3>${product.name}</h3>
+          <p>${product.desc}</p>
+        </div>
+
         <div class="product-bottom">
-          <span class="product-price">${money(product.price)}</span>
-          <button class="add-button" data-add="${product.id}" type="button">+ ADICIONAR</button>
+          <strong class="product-price">${money(product.price)}</strong>
+          <button
+            class="add-button"
+            type="button"
+            onclick="addToCart('${product.id}')"
+            aria-label="Adicionar ${product.name}"
+          >＋</button>
         </div>
       </div>
     </article>
   `).join("");
-
-  productsElement.querySelectorAll("[data-add]").forEach(button => {
-    button.addEventListener("click", () => {
-      addToCart(Number(button.dataset.add));
-    });
-  });
 }
 
-// ======================================
-// CARRINHO E PEDIDOS
-// ======================================
+function setCategory(category, button) {
+  activeCategory = category;
+  document.querySelectorAll(".category").forEach(item => item.classList.remove("active"));
+  if (button) button.classList.add("active");
+  renderProducts(category);
+}
+
 function addToCart(productId) {
-  const status = obterStatusLoja();
-  if (!status.aberta) {
-    showToast(status.mensagem);
-    return;
-  }
+  if (!requireStoreOpen()) return;
+
+  const product = products.find(item => item.id === productId);
+  if (!product) return;
+
   const existing = cart.find(item => item.id === productId);
   if (existing) {
     existing.quantity++;
   } else {
-    cart.push({ id: productId, quantity: 1 });
+    cart.push({ ...product, quantity: 1 });
   }
+
   updateCart();
-  showToast("Adicionado ao baú!");
 }
 
 function changeQuantity(productId, amount) {
-  const item = cart.find(i => i.id === productId);
+  if (amount > 0 && !requireStoreOpen()) return;
+
+  const item = cart.find(product => product.id === productId);
   if (!item) return;
+
   item.quantity += amount;
   if (item.quantity <= 0) {
-    cart = cart.filter(i => i.id !== productId);
+    cart = cart.filter(product => product.id !== productId);
   }
+
   updateCart();
 }
 
-function getSubtotal() {
-  return cart.reduce((total, item) => {
-    const product = products.find(p => p.id === item.id);
-    return total + product.price * item.quantity;
-  }, 0);
-}
-
-function getTotalItems() {
-  return cart.reduce((total, item) => total + item.quantity, 0);
+function cartTotal() {
+  return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
 
 function updateCart() {
-  saveCart();
-  const subtotal = getSubtotal();
-  const totalItems = getTotalItems();
+  const countElement = document.getElementById("count");
+  const totalElement = document.getElementById("total");
+  const count = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  cartCountElement.textContent = `${totalItems} ${totalItems === 1 ? "item" : "itens"}`;
-  cartBarTotalElement.textContent = money(subtotal);
-  cartSubtotalElement.textContent = money(subtotal);
-  checkoutTotalElement.textContent = money(subtotal);
+  if (countElement) countElement.textContent = count;
+  if (totalElement) totalElement.textContent = money(cartTotal());
 
-  if (cart.length === 0) {
-    cartItemsElement.innerHTML = `<div class="empty-cart">Seu baú está vazio.<br>Escolha um lanche lendário no cardápio!</div>`;
-    return;
-  }
-
-  cartItemsElement.innerHTML = cart.map(item => {
-    const product = products.find(p => p.id === item.id);
-    const itemTotal = product.price * item.quantity;
-    return `
-      <div class="cart-item">
-        <div>
-          <h4>${product.name}</h4>
-          <small>${money(product.price)} cada · ${money(itemTotal)}</small>
-        </div>
-        <div class="quantity-controls">
-          <button type="button" data-minus="${product.id}">−</button>
-          <span>${item.quantity}</span>
-          <button type="button" data-plus="${product.id}">+</button>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  cartItemsElement.querySelectorAll("[data-minus]").forEach(btn => {
-    btn.addEventListener("click", () => changeQuantity(Number(btn.dataset.minus), -1));
-  });
-  cartItemsElement.querySelectorAll("[data-plus]").forEach(btn => {
-    btn.addEventListener("click", () => changeQuantity(Number(btn.dataset.plus), 1));
-  });
+  renderCartItems();
 }
 
-document.getElementById("cartBar").addEventListener("click", () => {
-  openDrawer("cart");
-});
+function renderCartItems() {
+  const container = document.getElementById("cartItems");
+  const empty = document.getElementById("empty");
+  const checkoutTotal = document.getElementById("checkoutTotal");
 
-document.getElementById("goCheckout").addEventListener("click", () => {
-  const status = obterStatusLoja();
-  if (!status.aberta) {
-    showToast(status.mensagem);
+  if (!container) return;
+  if (empty) empty.classList.toggle("hidden", cart.length > 0);
+
+  container.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <strong>${item.name}</strong>
+        <small>${money(item.price)} cada — Subtotal: ${money(item.price * item.quantity)}</small>
+      </div>
+
+      <div class="quantity-controls">
+        <button type="button" onclick="changeQuantity('${item.id}', -1)">−</button>
+        <strong>${item.quantity}</strong>
+        <button type="button" onclick="changeQuantity('${item.id}', 1)">＋</button>
+      </div>
+    </div>
+  `).join("");
+
+  if (checkoutTotal) checkoutTotal.textContent = money(cartTotal());
+}
+
+function goToStep(step) {
+  if (!requireStoreOpen()) return;
+
+  if (step === 2 && cart.length === 0) {
+    alert("Seu carrinho está vazio.");
     return;
   }
-  if (cart.length === 0) {
-    showToast("Adicione pelo menos um produto.");
-    return;
-  }
-  openDrawer("checkout");
-});
 
-// ======================================
-// STATUS VISUAL NA TELA
-// ======================================
-function inicializarStatusLojaVisual() {
-  const aberta = verificarLojaAberta();
-  const openLabel = document.querySelector(".open-label");
-  if (openLabel) {
-    if (aberta) {
-      openLabel.innerHTML = `<i style="background: #42cf74;"></i> Desu Burguer Aberta`;
-    } else {
-      openLabel.innerHTML = `<i style="background: #ed3030;"></i> Desu Burguer Fechada`;
+  if (step === 3) {
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const address = document.getElementById("address").value.trim();
+
+    if (!name || !phone) {
+      alert("Por favor, preencha seu nome e telefone.");
+      return;
+    }
+
+    if (orderType === "entrega" && !address) {
+      alert("Por favor, informe o endereço de entrega ou use a localização.");
+      return;
     }
   }
+
+  currentStep = step;
+  document.getElementById("stepCart").classList.add("hidden");
+  document.getElementById("stepData").classList.add("hidden");
+  document.getElementById("stepPay").classList.add("hidden");
+
+  const modalTitle = document.getElementById("modalTitle");
+  if (step === 1) {
+    document.getElementById("stepCart").classList.remove("hidden");
+    modalTitle.textContent = "1. Seu Carrinho";
+  } else if (step === 2) {
+    document.getElementById("stepData").classList.remove("hidden");
+    modalTitle.textContent = "2. Dados e Entrega";
+  } else if (step === 3) {
+    document.getElementById("stepPay").classList.remove("hidden");
+    modalTitle.textContent = "3. Pagamento";
+  }
 }
 
-document.querySelectorAll('input[name="fulfillment"]').forEach(input => {
-  input.addEventListener("change", () => {
-    const isDelivery = input.value === "delivery";
-    deliveryFields.classList.toggle("hidden", !isDelivery);
-    pickupFields.classList.toggle("hidden", isDelivery);
-    document.getElementById("customerAddress").required = isDelivery;
-  });
-});
-
-document.querySelectorAll('input[name="payment"]').forEach(input => {
-  input.addEventListener("change", () => {
-    const isCash = input.value === "cash";
-    changeFields.classList.toggle("hidden", !isCash);
-  });
-});
-
-document.getElementById("needsChange")?.addEventListener("change", event => {
-  changeAmountField.classList.toggle("hidden", !event.target.checked);
-});
-
-// GEOLOCALIZAÇÃO
-document.getElementById("locationButton")?.addEventListener("click", () => {
-  const status = document.getElementById("locationStatus");
+function getLocation() {
   if (!navigator.geolocation) {
-    status.textContent = "Seu navegador não suporta geolocalização.";
+    alert("Seu navegador não suporta geolocalização.");
     return;
   }
-  status.textContent = "Obtendo localização...";
+  const addressInput = document.getElementById("address");
+  addressInput.value = "Obtendo localização GPS...";
   navigator.geolocation.getCurrentPosition(
-    pos => {
-      customerLocation = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-      status.textContent = "Localização obtida com sucesso!";
-      showToast("Localização adicionada.");
+    (position) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      addressInput.value = `Localização GPS: https://maps.google.com/?q=${lat},${lon}`;
     },
     () => {
-      status.textContent = "Não foi possível obter. Informe manualmente.";
-      customerLocation = null;
+      alert("Não foi possível obter sua localização. Verifique as permissões do GPS.");
+      addressInput.value = "";
     }
   );
-});
-
-// PIX E WHATSAPP
-function tlv(id, value) {
-  const text = String(value);
-  const byteLength = new TextEncoder().encode(text).length;
-  return id + String(byteLength).padStart(2, "0") + text;
 }
-function crc16(payload) {
-  let crc = 0xFFFF;
-  for (let i = 0; i < payload.length; i++) {
-    crc ^= payload.charCodeAt(i) << 8;
-    for (let j = 0; j < 8; j++) {
-      crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
-      crc &= 0xFFFF;
-    }
+
+function openCheckout() {
+  if (!requireStoreOpen()) return;
+  const checkout = document.getElementById("checkout");
+  if (!checkout) return;
+  checkout.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  goToStep(1);
+  updateCart();
+}
+
+function closeCheckout() {
+  const checkout = document.getElementById("checkout");
+  if (!checkout) return;
+  checkout.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+function setType(type) {
+  orderType = type;
+  document.getElementById("delivery")?.classList.toggle("selected", type === "entrega");
+  document.getElementById("pickup")?.classList.toggle("selected", type === "retirada");
+  document.getElementById("addressWrap")?.classList.toggle("hidden", type !== "entrega");
+}
+
+function setPay(method, button) {
+  paymentMethod = method;
+  document.querySelectorAll(".pay").forEach(item => item.classList.remove("selected"));
+  if (button) button.classList.add("selected");
+
+  const payInfo = document.getElementById("payInfo");
+  const changeWrap = document.getElementById("changeWrap");
+  const messages = {
+    Pix: "Os dados do Pix serão enviados pela loja no WhatsApp.",
+    Cartão: "Pagamento com cartão na entrega ou retirada.",
+    Dinheiro: "Pagamento em dinheiro. Informe se precisa de troco."
+  };
+
+  if (payInfo) payInfo.textContent = messages[method] || "";
+  if (changeWrap) changeWrap.classList.toggle("hidden", method !== "Dinheiro");
+}
+
+function finishOrder() {
+  if (!requireStoreOpen()) return;
+  if (cart.length === 0) {
+    alert("Seu carrinho está vazio.");
+    return;
   }
-  return crc.toString(16).toUpperCase().padStart(4, "0");
-}
-function generatePixPayload(amount) {
-  const numericAmount = Number(amount);
-  const merchantAccount = tlv("00", "br.gov.bcb.pix") + tlv("01", CONFIG.pixKey);
-  const additionalData = tlv("05", "***");
-  let payload = tlv("00", "01") + tlv("01", "11") + tlv("26", merchantAccount) + tlv("52", "0000") + tlv("53", "986") + tlv("54", numericAmount.toFixed(2)) + tlv("58", "BR") + tlv("59", CONFIG.pixName) + tlv("60", CONFIG.pixCity) + tlv("62", additionalData) + "6304";
-  payload += crc16(payload);
-  return payload;
-}
-function generateQRCode(payload) {
-  const qrElement = document.getElementById("pixQrCode");
-  qrElement.innerHTML = "";
-  new QRCode(qrElement, { text: payload, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.M });
-}
 
-document.getElementById("copyPix")?.addEventListener("click", async () => {
-  const textarea = document.getElementById("pixCode");
-  try {
-    await navigator.clipboard.writeText(textarea.value);
-    showToast("Código Pix copiado!");
-  } catch {
-    showToast("Erro ao copiar código.");
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const change = document.getElementById("change").value.trim();
+
+  let message = "🍔 *PEDIDO — DESU BURGUER*\n\n";
+  message += `*Nome:* ${name}\n`;
+  message += `*Telefone:* ${phone}\n`;
+  message += `*Tipo:* ${orderType === "entrega" ? "Entrega" : "Retirada"}\n`;
+
+  if (orderType === "entrega") {
+    message += `*Endereço:* ${address}\n`;
   }
-});
 
-document.getElementById("checkoutForm").addEventListener("submit", event => {
-  event.preventDefault();
-  const name = document.getElementById("customerName").value.trim();
-  const phone = document.getElementById("customerPhone").value.trim();
-  const fulfillment = document.querySelector('input[name="fulfillment"]:checked').value;
-  const payment = document.querySelector('input[name="payment"]:checked').value;
-  const address = document.getElementById("customerAddress").value.trim();
-  const reference = document.getElementById("addressReference").value.trim();
-  const needsChange = document.getElementById("needsChange")?.checked || false;
-  const changeAmount = document.getElementById("changeAmount")?.value || "";
+  message += `*Pagamento:* ${paymentMethod}\n`;
+  if (paymentMethod === "Dinheiro" && change) {
+    message += `*Troco para:* ${change}\n`;
+  }
 
-  if (!name || !phone) { showToast("Preencha seu nome e telefone."); return; }
-  if (fulfillment === "delivery" && !address) { showToast("Informe o endereço."); return; }
+  message += "\n*ITENS DO PEDIDO*\n";
+  cart.forEach(item => {
+    message += `${item.quantity}x ${item.name} — ${money(item.price * item.quantity)}\n`;
+  });
+  message += `\n*TOTAL: ${money(cartTotal())}*`;
 
-  const items = cart.map(item => {
-    const product = products.find(p => p.id === item.id);
-    return { id: item.id, name: product.name, quantity: item.quantity, price: product.price, total: product.price * item.quantity };
+  const number = WHATSAPP_NUMBER.replace(/\D/g, "");
+  const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".category").forEach(button => {
+    button.addEventListener("click", () => {
+      setCategory(button.dataset.cat, button);
+    });
   });
 
-  currentOrder = { name, phone, fulfillment, payment, address, reference, needsChange, changeAmount, location: customerLocation, items, total: getSubtotal() };
+  updateStoreStatus();
+  renderProducts("todos");
+  updateCart();
 
-  if (payment === "pix") {
-    try {
-      const payload = generatePixPayload(currentOrder.total);
-      document.getElementById("pixTotal").textContent = money(currentOrder.total);
-      document.getElementById("pixCode").value = payload;
-      generateQRCode(payload);
-      openDrawer("pix");
-    } catch (e) {
-      showToast("Erro ao gerar Pix.");
-    }
-  } else {
-    showOrderReady(currentOrder);
-  }
+  setType("entrega");
+  setPay("Pix", document.querySelector(".pay"));
 });
-
-function showOrderReady(order) {
-  const title = document.getElementById("orderReadyTitle");
-  const description = document.getElementById("orderReadyText");
-  const summary = document.getElementById("orderPaymentSummary");
-
-  if (order.payment === "card") {
-    title.textContent = "Pagamento no cartão";
-    description.textContent = "Seu pedido está pronto. Envie pelo WhatsApp e pague pessoalmente.";
-    summary.innerHTML = `<strong>Forma:</strong> Cartão<br><strong>Total:</strong> ${money(order.total)}`;
-  } else if (order.payment === "cash") {
-    title.textContent = "Pagamento em dinheiro";
-    description.textContent = "Seu pedido está pronto. Envie pelo WhatsApp e pague pessoalmente.";
-    let changeText = order.needsChange ? `Troco para ${money(Number(order.changeAmount))}` : "Não precisa de troco.";
-    summary.innerHTML = `<strong>Forma:</strong> Dinheiro<br><strong>Troco:</strong> ${changeText}<br><strong>Total:</strong> ${money(order.total)}`;
-  }
-  openDrawer("order");
-}
-
-document.getElementById("pixPaidButton")?.addEventListener("click", () => sendWhatsAppMessage());
-document.getElementById("sendOrderButton")?.addEventListener("click", () => sendWhatsAppMessage());
-
-
-// ======================================
-// MENSAGEM DO WHATSAPP - DESU BURGUER
-// ======================================
-function sendWhatsAppMessage() {
-  if (!currentOrder) return;
-
-  const lines = [];
-
-  lines.push("🏴‍☠️ *NOVO PEDIDO | DESU BURGUER* 🍔");
-  lines.push("");
-  lines.push("🛒 *ITENS DO PEDIDO*");
-  lines.push("");
-
-  currentOrder.items.forEach(i => {
-    const product = products.find(p => p.id === i.id);
-
-    lines.push(`*${i.quantity}x ${product.name}*`);
-    lines.push(`Valor unitário: ${money(i.price)}`);
-    lines.push(`Subtotal: ${money(i.total)}`);
-    lines.push(`_${product.desc}_`);
-    lines.push("");
-  });
-
-  lines.push("💰 *RESUMO DO PEDIDO*");
-  lines.push(`*Total dos produtos: ${money(currentOrder.total)}*`);
-  lines.push("🛵 Taxa de entrega: A confirmar pela loja");
-  lines.push("");
-
-  lines.push("👤 *DADOS DO CLIENTE*");
-  lines.push(`*Nome:* ${currentOrder.name}`);
-  lines.push(`*Telefone:* ${currentOrder.phone}`);
-  lines.push("");
-
-  if (currentOrder.fulfillment === "delivery") {
-    lines.push("📍 *DADOS DA ENTREGA*");
-    lines.push(`*Endereço:* ${currentOrder.address}`);
-
-    if (currentOrder.reference) {
-      lines.push(`*Referência:* ${currentOrder.reference}`);
-    }
-
-    if (currentOrder.location) {
-      lines.push(
-        `*Localização:* https://www.google.com/maps?q=${currentOrder.location.latitude},${currentOrder.location.longitude}`
-      );
-    }
-  } else {
-    lines.push("🏪 *RETIRADA NA LOJA*");
-  }
-
-  lines.push("");
-  lines.push("💳 *FORMA DE PAGAMENTO*");
-
-  let formaPagamento = currentOrder.payment.toUpperCase();
-
-  if (currentOrder.payment === "cash") formaPagamento = "DINHEIRO";
-  if (currentOrder.payment === "pix") formaPagamento = "PIX";
-  if (currentOrder.payment === "card") formaPagamento = "CARTÃO";
-
-  lines.push(formaPagamento);
-
-  if (currentOrder.payment === "cash" && currentOrder.needsChange) {
-    lines.push(`💵 *Troco para:* ${money(Number(currentOrder.changeAmount))}`);
-  }
-
-  lines.push("");
-  lines.push("🏴‍☠️ *Obrigado por escolher a DESU BURGUER!* 🍔");
-  lines.push("🌊 Seu pedido está navegando até nossa cozinha!");
-
-  const text = encodeURIComponent(lines.join("\n"));
-
-  window.open(`https://wa.me/${CONFIG.whatsapp}?text=${text}`, "_blank");
-}
-
-// INICIALIZAÇÃO
-restoreCart();
-renderCategories();
-renderProducts();
-updateCart();
-inicializarStatusLojaVisual();
