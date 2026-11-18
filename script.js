@@ -1,7 +1,7 @@
 
-// ==========================================
-// DESU BURGUER — SCRIPT OTIMIZADO
-// ==========================================
+ // ==========================================
+ // DESU BURGUER — SCRIPT OTIMIZADO
+ // ==========================================
 
 const WHATSAPP_NUMBER = "5589981501360";
 
@@ -91,7 +91,7 @@ const products = [
     name: "Frango Duplo",
     cat: "hamburgueres",
     price: 28,
-    desc: "2 filés de frango 120g, mussarela, 2 bacon, cebola e molho da casa.",
+    desc: "Pão brioche,2 filés de frango 120g, mussarela, 2 bacon, cebola e molho da casa.",
     image: photos["frango-duplo"]
   },
   {
@@ -336,10 +336,7 @@ function renderProducts(category = activeCategory) {
         </div>
 
         ${
-          (
-            product.cat === "hamburgueres" ||
-            ["combo-simples", "combo-duplo", "combo-desu"].includes(product.id)
-          ) ? `
+          product.cat === "hamburgueres" ? `
             <button
               class="mais-combo-button"
               type="button"
