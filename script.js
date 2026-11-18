@@ -67,7 +67,7 @@ const products = [
     name: "Combo Desu",
     cat: "combos",
     price: 100,
-    desc: "3 X Desu, 2 batatas 200g e refrigerante 1 litro.",
+    desc: "3 X Desu, cada um com 1 carne, alface e tomate. Acompanha 2 batatas 200g e refrigerante de 1 litro.",
     image: photos["combo-desu"]
   },
   {
@@ -277,91 +277,8 @@ let orderType = "entrega";
 let paymentMethod = "Pix";
 let activeCategory = "todos";
 let currentStep = 1;
-let storeOpen = false;
 
-function getStoreSchedule(date = new Date()) {
-  const day = date.getDay();
-
-  if (day === 3) return null;
-
-  if (day === 2) {
-    return {
-      open: 18 * 60,
-      close: 23 * 60 + 30,
-      text: "18:00"
-    };
-  }
-
-  return {
-    open: 18 * 60 + 30,
-    close: 23 * 60 + 30,
-    text: "18:30"
-  };
-}
-
-function isStoreOpen(date = new Date()) {
-  const schedule = getStoreSchedule(date);
-
-  if (!schedule) return false;
-
-  const minutes = date.getHours() * 60 + date.getMinutes();
-
-  return minutes >= schedule.open && minutes < schedule.close;
-}
-
-function updateStoreStatus() {
-  storeOpen = isStoreOpen();
-
-  const schedule = getStoreSchedule();
-
-  const status = document.getElementById("storeStatus");
-  const text = document.getElementById("statusText");
-  const dot = document.getElementById("statusDot");
-
-  if (status) {
-    status.classList.toggle("closed", !storeOpen);
-    status.classList.toggle("open", storeOpen);
-  }
-
-  if (dot) {
-    dot.classList.toggle("closed-dot", !storeOpen);
-  }
-
-  if (text) {
-    if (storeOpen) {
-      text.textContent = "ABERTO AGORA";
-    } else {
-      const day = new Date().getDay();
-
-      if (day === 3) {
-        text.textContent = "FECHADO HOJE (Abre Qui 18:30)";
-      } else {
-        text.textContent = `FECHADO (Abre às ${schedule ? schedule.text : "18:30"})`;
-      }
-    }
-  }
-}
-
-function requireStoreOpen() {
-  updateStoreStatus();
-
-  if (storeOpen) return true;
-
-  const schedule = getStoreSchedule();
-  const day = new Date().getDay();
-
-  let abrirMsg = schedule
-    ? `às ${schedule.text}`
-    : "amanhã às 18:30";
-
-  if (day === 3) {
-    abrirMsg = "amanhã (Quinta) às 18:30";
-  }
-
-  alert(`A Desu Burguer está fechada no momento. Abriremos ${abrirMsg}!`);
-
-  return false;
-}
+// Pedidos podem ser montados em qualquer horário.
 
 function money(value) {
   return Number(value).toLocaleString("pt-BR", {
@@ -414,9 +331,22 @@ function renderProducts(category = activeCategory) {
             class="add-button"
             type="button"
             onclick="addToCart('${product.id}')"
-            aria-label="Adicionar ${product.name}"
+            aria-label="Adicionar ${product.name} pelo preço normal"
           >＋</button>
         </div>
+
+        ${
+          (
+            product.cat === "hamburgueres" ||
+            ["combo-simples", "combo-duplo", "combo-desu"].includes(product.id)
+          ) ? `
+            <button
+              class="mais-combo-button"
+              type="button"
+              onclick="addMaisCombo('${product.id}')"
+            >Mais Combo — R$ 13,00</button>
+          ` : ""
+        }
       </div>
     </article>
   `).join("");
@@ -441,8 +371,6 @@ function setCategory(category, button) {
 // ==========================================
 
 function addToCart(productId) {
-  if (!requireStoreOpen()) return;
-
   const product = products.find(item => item.id === productId);
 
   if (!product) return;
@@ -461,9 +389,58 @@ function addToCart(productId) {
   updateCart();
 }
 
-function changeQuantity(productId, amount) {
-  if (amount > 0 && !requireStoreOpen()) return;
+// ==========================================
+// MAIS COMBO
+// ==========================================
 
+function addMaisCombo(productId) {
+  const comboBurgers = {
+    "combo-simples": {
+      burgerId: "simples",
+      displayName: "Hambúrguer do Combo Simples"
+    },
+    "combo-duplo": {
+      burgerId: "duplo",
+      displayName: "Hambúrguer do Combo Duplo"
+    },
+    "combo-desu": {
+      burgerId: "x-desu",
+      displayName: "Hambúrguer do Combo Desu"
+    }
+  };
+
+  const comboChoice = comboBurgers[productId];
+  const burgerId = comboChoice ? comboChoice.burgerId : productId;
+
+  const burger = products.find(
+    item => item.id === burgerId && item.cat === "hamburgueres"
+  );
+
+  if (!burger) return;
+
+  // Mantém separadas as opções vindas dos combos e os hambúrgueres individuais.
+  const displayName = comboChoice ? comboChoice.displayName : burger.name;
+  const comboId = `mais-combo-${productId}`;
+  const existing = cart.find(item => item.id === comboId);
+
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({
+      id: comboId,
+      name: `Mais Combo — ${displayName}`,
+      price: 13,
+      quantity: 1,
+      desc: `${displayName} + batata frita 200g + refrigerante em lata`,
+      isMaisCombo: true,
+      burgerName: displayName
+    });
+  }
+
+  updateCart();
+}
+
+function changeQuantity(productId, amount) {
   const item = cart.find(product => product.id === productId);
 
   if (!item) return;
@@ -523,6 +500,7 @@ function renderCartItems() {
         <small>
           ${money(item.price)} cada —
           Subtotal: ${money(item.price * item.quantity)}
+          ${item.isMaisCombo ? "<br>Inclui refrigerante em lata e batata frita de 200g." : ""}
         </small>
       </div>
 
@@ -552,8 +530,6 @@ function renderCartItems() {
 // ==========================================
 
 function goToStep(step) {
-  if (!requireStoreOpen()) return;
-
   if (step === 2 && cart.length === 0) {
     alert("Seu carrinho está vazio.");
     return;
@@ -629,8 +605,6 @@ function getLocation() {
 // ==========================================
 
 function openCheckout() {
-  if (!requireStoreOpen()) return;
-
   const checkout = document.getElementById("checkout");
 
   if (!checkout) return;
@@ -709,8 +683,6 @@ function setPay(method, button) {
 // ==========================================
 
 function finishOrder() {
-  if (!requireStoreOpen()) return;
-
   if (cart.length === 0) {
     alert("Seu carrinho está vazio.");
     return;
@@ -721,7 +693,6 @@ function finishOrder() {
   const address = document.getElementById("address").value.trim();
   const change = document.getElementById("change").value.trim();
 
-  // NOVO: CAMPO DE OBSERVAÇÕES
   const observations = document
     .getElementById("orderObservations")
     .value.trim();
@@ -749,9 +720,12 @@ function finishOrder() {
 
   cart.forEach(item => {
     message += `${item.quantity}x ${item.name} — ${money(item.price * item.quantity)}\n`;
+
+    if (item.isMaisCombo) {
+      message += `   Inclui: ${item.burgerName}, 1 refrigerante em lata e batata frita de 200g.\n`;
+    }
   });
 
-  // NOVO: ENVIA AS OBSERVAÇÕES PARA A LOJA
   if (observations) {
     message += `\n*OBSERVAÇÕES DO PEDIDO:*\n${observations}\n`;
   }
@@ -776,8 +750,6 @@ document.addEventListener("DOMContentLoaded", () => {
       setCategory(button.dataset.cat, button);
     });
   });
-
-  updateStoreStatus();
 
   renderProducts("todos");
 

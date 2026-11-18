@@ -51,7 +51,7 @@ a {
 }
 
 /* =====================================
-   CABEÇALHO & FONTES ESTILO RÚSTICO
+   CABEÇALHO
 ===================================== */
 
 .header {
@@ -77,7 +77,7 @@ a {
 .brand-text h1 {
   font-family: 'Permanent Marker', cursive;
   color: var(--yellow);
-  font-size: 38px; /* Travado em pixels fixos para não inflar no GitHub */
+  font-size: 38px;
   line-height: 1.05;
   text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
   letter-spacing: 0.5px;
@@ -91,7 +91,7 @@ a {
   margin-top: 6px;
   color: var(--yellow);
   font-family: 'Permanent Marker', cursive;
-  font-size: 13px; /* Travado em pixels fixos */
+  font-size: 13px;
   letter-spacing: 1px;
   text-shadow: 1px 1px 0px rgba(0,0,0,0.8);
 }
@@ -104,31 +104,10 @@ a {
   margin: 0 auto 30px;
 }
 
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 30px;
-  background: rgba(46,204,113,0.15);
-  color: #55e894;
-  font-size: 11px;
-  font-weight: 800;
-  border: 1px solid rgba(46,204,113,0.3);
-}
-
-.live-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #35d477;
-  box-shadow: 0 0 8px #35d477;
-}
-
 .combos-link {
   color: var(--yellow);
   font-family: 'Permanent Marker', cursive;
-  font-size: 14px; /* Travado em pixels fixos */
+  font-size: 14px;
   text-decoration: none;
   text-shadow: 1px 1px 0px rgba(0,0,0,0.8);
 }
@@ -158,7 +137,7 @@ a {
   margin: 15px 0 8px;
   color: var(--yellow);
   font-family: 'Permanent Marker', cursive;
-  font-size: 13px; /* Travado em pixels fixos */
+  font-size: 13px;
   letter-spacing: 0.5px;
 }
 
@@ -220,7 +199,7 @@ a {
   font-family: 'Permanent Marker', cursive;
   margin-bottom: 20px;
   color: var(--yellow);
-  font-size: 26px; /* Travado em pixels fixos */
+  font-size: 26px;
   letter-spacing: 0.5px;
   text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
 }
@@ -363,7 +342,30 @@ a {
 }
 
 /* =====================================
-   BARRA FIXA DO CARRINHO (TAMANHO CONTROLADO)
+   BOTÃO MAIS COMBO — R$ 13,00
+===================================== */
+
+.mais-combo-button {
+  width: 100%;
+  margin-top: 9px;
+  padding: 10px 8px;
+  border: 1px solid var(--yellow);
+  border-radius: 9px;
+  background: rgba(255, 201, 40, 0.12);
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.mais-combo-button:hover {
+  background: rgba(255, 201, 40, 0.24);
+  transform: translateY(-1px);
+}
+
+/* =====================================
+   BARRA FIXA DO CARRINHO
 ===================================== */
 
 .cart-bar {
@@ -417,7 +419,7 @@ a {
 .ver-pedido-label {
   font-family: 'Permanent Marker', cursive;
   color: white;
-  font-size: 16px; /* Travado em pixels fixos para não estourar no GitHub */
+  font-size: 16px;
   letter-spacing: 0.5px;
   text-shadow: 1px 1px 0px rgba(0,0,0,0.6);
   white-space: nowrap;
@@ -426,7 +428,7 @@ a {
 .cart-right strong {
   font-family: 'Permanent Marker', cursive;
   color: var(--yellow);
-  font-size: 16px; /* Travado em pixels fixos para harmonizar */
+  font-size: 16px;
   text-shadow: 1px 1px 0px rgba(0,0,0,0.6);
   white-space: nowrap;
 }
@@ -721,26 +723,8 @@ a {
 }
 
 /* =====================================
-   STATUS DA LOJA E LINKS
+   LINKS
 ===================================== */
-
-.status.open {
-  background: rgba(46,204,113,0.15);
-  color: #55e894;
-  border-color: rgba(46,204,113,0.3);
-}
-
-.status.closed {
-  background: rgba(230,46,46,0.15);
-  color: #ff7777;
-  border-color: rgba(230,46,46,0.35);
-}
-
-.status.closed .live-dot,
-.live-dot.closed-dot {
-  background: #e62e2e;
-  box-shadow: 0 0 8px #e62e2e;
-}
 
 .status-actions {
   display: flex;
@@ -770,6 +754,10 @@ a {
 .instagram-icon {
   stroke: currentColor;
 }
+
+/* =====================================
+   RESPONSIVIDADE
+===================================== */
 
 @media (min-width: 700px) {
   .products {
